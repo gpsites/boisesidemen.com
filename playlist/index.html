@@ -9,43 +9,51 @@
     <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
     <link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet">
     <style>
+      [v-cloak] > * { display: none }
+      [v-cloak]::before { 
+        font-size: 300%;
+        font-style: italic;
+        content: "loading…";
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
       #app {
         padding:0;
         margin:0;
-        display: flex;
-        align-items: center;
       }
-      #app > .column {
+      #app > .controls {
+        z-index: 1000;
+        position: fixed;
+        top: 0;
+        left: 0;
         height: 100vh;
-        overflow: auto;
+        width: 30vw;
+        overflow: scroll;
+        padding: 1em 2em 1em 2em;
       }
-      #app > .column:first-child {
-        flex: 1;
-        padding:1em .5em 0em 2em;
+      #app > .controls .md-button.shuffle {
+        position: absolute;
+        top: 1.75em;
+        right: 1em;
       }
-      #app > .column:nth-child(2) {
-        flex: 4;
-        padding:2em 2em 0em 1em;
+      #app > .results {
+        padding: 2em 2em 2em 30vw;
       }
-      #app > .column .md-card {
-        margin-bottom:.5em
-      }
-      #app .md-button.shuffle {
-        margin-top: -.5em;
-        float: right;
+      #app > .results .md-card {
+        margin-bottom: .5em;
       }
     </style>
   </head> 
 
   <body> 
-    <div id="app">
-      <div class="column right">
-        <h3 class="count">
-          {{filtered.length}} found
-          <md-button class="md-icon-button md-dense md-raised shuffle" @click="shuffle">
-            <md-icon>shuffle</md-icon>
-          </md-button>
-        </h3>
+    <div v-cloak id="app">
+      <div class="controls" v-if="tunes.length">
+        <md-button class="md-icon-button md-dense md-raised shuffle" @click="shuffle">
+          <md-icon>shuffle</md-icon>
+        </md-button>
+        <h3 class="count">{{filtered.length}} found</h3>
         <md-field>
           <md-input v-model="textFilter" placeholder="text filter"></md-input>
         </md-field>
@@ -54,7 +62,7 @@
           <br />
         </div>
       </div>
-      <div class="column">
+      <div class="results">
           <md-card v-for="tune in filtered" :key="tune.name">
             <div @click="visit(tune)">
               <md-ripple>
@@ -71,6 +79,10 @@
             </div>
           </md-card>
       </div>
+      <md-snackbar md-position="center" :md-duration="Infinity" :md-active.sync="message" md-persistent>
+          <span>{{message}}</span>
+          <md-button class="md-primary" @click="message = null">Okay</md-button>
+      </md-snackbar>
     </div>
   </body>
 
