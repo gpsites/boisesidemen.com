@@ -25,7 +25,7 @@ var app = new Vue({
   methods: {
     visit: function (tune) {
       setTimeout(function() {
-        window.location.href = tune.url;
+        window.open(tune.url, "_blank");
       }, 300);
     },
     shuffle: function () {
