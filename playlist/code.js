@@ -2,7 +2,8 @@
 const sheetUrl = "tunes.csv";
 const antiCors = "";
 
-const normalize = str => str.toLowerCase().replace(/\s+/, ' ');
+const normalize = str => str.toLowerCase().replace(/\s+/, ' ').replace(/[^a-z ]+/, '');
+
 
 Vue.use(VueMaterial.default);
 var app = new Vue({
