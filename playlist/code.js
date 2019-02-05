@@ -5,6 +5,16 @@ const antiCors = "";
 const normalize = str => str.toLowerCase().replace(/\s+/, ' ').replace(/[^a-z ]+/, '');
 const negAttr = name => name.startsWith('!');
 
+// a simple BS seeded RNG to support reproducible shuffles
+const randSeed = () => Math.round(Math.random() * 99999)
+const nextRand = seed => {
+  const nextSeed = ((seed * 9301 + 49297) % 233280);
+  return {seed: nextSeed, value: nextSeed / 233280};
+}
+const nextRandInt = (seed, limit) => {
+  const { seed: nextSeed, value } = nextRand(seed);
+  return { seed: nextSeed, value: Math.floor(value * (limit + 1)) };
+}
 
 Vue.use(VueMaterial.default);
 var app = new Vue({
@@ -15,17 +25,31 @@ var app = new Vue({
     positiveAttrs: [],
     negativeAttrs: [],
     tunes: [],
+    shuffleSeed: undefined,
     message: null,
   },
   computed: {
+    dirty: function () {
+      return this.textFilter || this.shuffleSeed || this.checkedAttrs.join() !== this.negativeAttrs.join();
+    },
     filtered: function () {
       const text = normalize(this.textFilter);
       const suppressed = this.tunes.filter(tune => 
         tune.attrs.reduce((r, v) => r && !(negAttr(v) && this.checkedAttrs.includes(v)), true)
       );
-      return suppressed.filter(tune => tune.search.indexOf(text) > -1 &&
+      let filtered = suppressed.filter(tune => tune.search.indexOf(text) > -1 &&
         this.checkedAttrs.reduce((r, v) => r && (negAttr(v) || tune.attrs.includes(v)), true)
       );
+      if (this.shuffleSeed) {
+        const len = filtered.length;
+        for (let i = 0, seed = this.shuffleSeed; i < len; i++) {
+          const temp = filtered.splice(i, 1);
+          let { seed: nextSeed, value } = nextRandInt(seed, len-1);
+          filtered.splice(value, 0, temp[0]);
+          seed = nextSeed;
+        }
+      }
+      return filtered;
     },
   },
   methods: {
@@ -35,11 +59,12 @@ var app = new Vue({
       }, 300);
     },
     shuffle: function () {
-      const last = this.tunes.length - 1;
-      for (let i = last; i >= 0; i--) {
-        const temp = this.tunes.splice(i, 1);
-        this.tunes.splice(Math.floor(Math.random() * last - 1), 0, temp[0]);
-      }
+      this.shuffleSeed = randSeed();
+    },
+    reset: function () {
+      this.textFilter = '';
+      this.shuffleSeed = undefined;
+      this.checkedAttrs = this.negativeAttrs.slice();
     }
   },
   mounted: function () {

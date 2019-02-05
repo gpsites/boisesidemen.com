@@ -38,6 +38,11 @@
         top: 1.75em;
         right: 1em;
       }
+      #app > .controls .md-button.reset {
+        position: absolute;
+        top: 1.75em;
+        right: 4.5em;
+      }
       #app > .results {
         padding: 2em 2em 2em 30vw;
       }
@@ -60,7 +65,12 @@
         <md-button class="md-icon-button md-dense md-raised shuffle" @click="shuffle">
           <md-icon>shuffle</md-icon>
         </md-button>
-        <h3 class="count">{{filtered.length}} found</h3>
+        <h3 class="count">
+          {{filtered.length}} found
+          <md-button v-if="dirty" class="md-icon-button md-dense md-raised reset" @click="reset">
+            <md-icon>clear</md-icon>
+          </md-button>
+        </h3>
         <md-field>
           <md-input v-model="textFilter" placeholder="text filter"></md-input>
         </md-field>
