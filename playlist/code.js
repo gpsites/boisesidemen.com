@@ -3,6 +3,7 @@ const sheetUrl = "tunes.csv";
 const antiCors = "";
 
 const normalize = str => str.toLowerCase().replace(/\s+/, ' ').replace(/[^a-z ]+/, '');
+const negAttr = name => name.startsWith('!');
 
 
 Vue.use(VueMaterial.default);
@@ -11,15 +12,19 @@ var app = new Vue({
   data: {
     textFilter: '',
     checkedAttrs: [],
-    attrNames: [],
+    positiveAttrs: [],
+    negativeAttrs: [],
     tunes: [],
     message: null,
   },
   computed: {
     filtered: function () {
       const text = normalize(this.textFilter);
-      return this.tunes.filter(tune => tune.search.indexOf(text) > -1 &&
-        this.checkedAttrs.reduce((r, v) => r && tune.attrs.includes(v), true)
+      const suppressed = this.tunes.filter(tune => 
+        tune.attrs.reduce((r, v) => r && !(negAttr(v) && this.checkedAttrs.includes(v)), true)
+      );
+      return suppressed.filter(tune => tune.search.indexOf(text) > -1 &&
+        this.checkedAttrs.reduce((r, v) => r && (negAttr(v) || tune.attrs.includes(v)), true)
       );
     },
   },
@@ -55,13 +60,16 @@ var app = new Vue({
 function loadRaw(data) {
   localStorage.setItem('cachedData', JSON.stringify(data));
 
-  app.attrNames = data.shift().slice(2);
+  const attrNames = data.shift().slice(2);
+  app.positiveAttrs = attrNames.filter(name => !negAttr(name));
+  app.negativeAttrs = attrNames.filter(name => negAttr(name));
+  app.checkedAttrs = app.negativeAttrs.slice();
 
   app.tunes = [];
   for (tune of data) {
     const name = tune.shift();
     const notes = tune.shift();
-    let attrs = tune.reduce((r, v, i) => v === 'TRUE' ? [...r, app.attrNames[i]] : r, []);
+    let attrs = tune.reduce((r, v, i) => v === 'TRUE' ? [...r, attrNames[i]] : r, []);
     app.tunes.push({
       name,
       notes,
