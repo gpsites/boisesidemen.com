@@ -50,10 +50,10 @@
         margin-bottom: .5em;
       }
       #app span.excluder:before {
-        content: 'Exclude';
+        content: 'NO';
       }
       #app div.md-checked span.excluder:before {
-        content: 'Excluding';
+        content: 'NO';
         color: red;
       }
     </style>
@@ -80,7 +80,7 @@
         </div>
         <hr />
         <div v-for="name in negativeAttrs">
-          <md-checkbox v-model="checkedAttrs" :value="name"><span class="excluder" /> all {{name.slice(1)}}</md-checkbox>
+          <md-checkbox v-model="checkedAttrs" :value="name"><span class="excluder" /> {{name.slice(1)}}</md-checkbox>
           <br />
         </div>
       </div>
