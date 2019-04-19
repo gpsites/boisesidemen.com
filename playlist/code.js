@@ -1,6 +1,6 @@
 
-const sheetUrl = "tunes.csv";
-const antiCors = "";
+const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThlre8GwnVTDD1LMt2yfpqDFSnOMaLtYZT-oGc33sy9hpVs5QhA413wTnKXoYQ-JbwAg7Af2Z8rH_6/pub?gid=5&single=true&output=csv";
+const antiCors = "https://sidemen-cors-anywhere.herokuapp.com/";
 
 const normalize = str => str.toLowerCase().replace(/\s+/, ' ').replace(/[^a-z ]+/, '');
 const negAttr = name => name.startsWith('!');
