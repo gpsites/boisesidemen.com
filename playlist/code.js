@@ -1,6 +1,8 @@
 
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThlre8GwnVTDD1LMt2yfpqDFSnOMaLtYZT-oGc33sy9hpVs5QhA413wTnKXoYQ-JbwAg7Af2Z8rH_6/pub?gid=5&single=true&output=csv";
 const antiCors = "https://sidemen-cors-anywhere.herokuapp.com/";
+// const sheetUrl = "tunes.csv";
+// const antiCors = "";
 
 const normalize = str => str.toLowerCase().replace(/\s+/, ' ').replace(/[^a-z ]+/, '');
 const negAttr = name => name.startsWith('!');
@@ -85,7 +87,7 @@ var app = new Vue({
 function loadRaw(data) {
   localStorage.setItem('cachedData', JSON.stringify(data));
 
-  const attrNames = data.shift().slice(2);
+  const attrNames = data.shift().slice(3);
   app.positiveAttrs = attrNames.filter(name => !negAttr(name));
   app.negativeAttrs = attrNames.filter(name => negAttr(name));
   app.checkedAttrs = app.negativeAttrs.slice();
@@ -93,13 +95,14 @@ function loadRaw(data) {
   app.tunes = [];
   for (tune of data) {
     const name = tune.shift();
+    const filename = tune.shift();
     const notes = tune.shift();
     let attrs = tune.reduce((r, v, i) => v === 'TRUE' ? [...r, attrNames[i]] : r, []);
     app.tunes.push({
       name,
       notes,
       attrs,
-      url: 'files/' + name,
+      url: filename ? `files/${filename}` : encodeURI(`nofile.html?name=${name}`),
       search: normalize(name + ' ' + notes)
     });
   }
