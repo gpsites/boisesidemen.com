@@ -1,10 +1,17 @@
 <!DOCTYPE html> 
 <html>
-  <head> 
-  </head> 
+  <style>
+    p {
+      margin: 0;
+      position: absolute;
+      top: 40%;
+      font-size: 8vw;
+      width: 99vw;
+      text-align: center;
+    }
+  </style>
 
   <body> 
-    <center><h1></h1></center>
   </body>
 
   <script>
@@ -13,8 +20,8 @@
 
     document.title = name
 
-    var h1 = document.querySelector('h1')
-    h1.innerHTML = name
+    var body = document.querySelector('body')
+    body.innerHTML = `<p>${name}</p>`
   </script>
 </html>
 
